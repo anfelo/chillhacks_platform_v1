@@ -1,0 +1,29 @@
+package postgres
+
+import (
+	"fmt"
+
+	"github.com/jmoiron/sqlx"
+)
+
+func NewStore(dataSourceName string) (*Store, error) {
+	db, err := sqlx.Open("postgres", dataSourceName)
+	if err != nil {
+		return nil, fmt.Errorf("error opening database: %w", err)
+	}
+	if err := db.Ping(); err != nil {
+		return nil, fmt.Errorf("error connecting to database: %w", err)
+	}
+
+	return &Store{
+		CourseStore:  &CourseStore{DB: db},
+		LessonStore:  &LessonStore{DB: db},
+		SubjectStore: &SubjectStore{DB: db},
+	}, nil
+}
+
+type Store struct {
+	*CourseStore
+	*LessonStore
+	*SubjectStore
+}
