@@ -19,5 +19,5 @@ CREATE TABLE lessons (
     title TEXT NOT NULL,
     slug TEXT NOT NULL,
     category TEXT NOT NULL,
-    order INT NOT NULL
+    sorting_order INT NOT NULL
 );

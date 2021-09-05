@@ -3,6 +3,7 @@ module github.com/anfelo/chillhacks_platform
 go 1.17
 
 require (
+	github.com/alexedwards/scs/postgresstore v0.0.0-20210904201103-9ffa4cfa9323 // indirect
 	github.com/alexedwards/scs/v2 v2.4.0 // indirect
 	github.com/go-chi/chi v1.5.4 // indirect
 	github.com/google/uuid v1.3.0 // indirect

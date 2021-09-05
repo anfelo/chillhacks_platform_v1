@@ -3,28 +3,28 @@ package courses
 import "github.com/google/uuid"
 
 type Course struct {
-	ID           uuid.UUID `db:"id"`
-	SubjectID    uuid.UUID `db:"subject_id"`
-	Title        string    `db:"title"`
-	Description  string    `db:"description"`
-	Slug         string    `db:"slug"`
-	LessonsCount int       `db:"lessons_count"`
-	ImgURL       string    `db:"img_url"`
+	ID           uuid.UUID `json:"id" db:"id"`
+	SubjectID    uuid.UUID `json:"subject_id" db:"subject_id"`
+	Title        string    `json:"title" db:"title"`
+	Description  string    `json:"description" db:"description"`
+	Slug         string    `json:"slug" db:"slug"`
+	LessonsCount int       `json:"lessons_count" db:"lessons_count"`
+	ImgURL       string    `json:"img_url" db:"img_url"`
 }
 
 type Lesson struct {
-	ID       uuid.UUID `db:"id"`
-	CourseID uuid.UUID `db:"course_id"`
-	Title    string    `db:"title"`
-	Slug     string    `db:"slug"`
-	Category string    `db:"category"`
-	Order    int       `db:"order"`
+	ID       uuid.UUID `json:"id" db:"id"`
+	CourseID uuid.UUID `json:"course_id" db:"course_id"`
+	Title    string    `json:"title" db:"title"`
+	Slug     string    `json:"slug" db:"slug"`
+	Category string    `json:"category" db:"category"`
+	Order    int       `json:"sorting_order" db:"sorting_order"`
 }
 
 type Subject struct {
-	ID     uuid.UUID `db:"id"`
-	Title  string    `db:"title"`
-	ImgURL string    `db:"img_url"`
+	ID     uuid.UUID `json:"id" db:"id"`
+	Title  string    `json:"title" db:"title"`
+	ImgURL string    `json:"img_url" db:"img_url"`
 }
 
 type CourseStore interface {

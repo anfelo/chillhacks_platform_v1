@@ -12,7 +12,7 @@ const (
 	queryGetLesson          = `SELECT * FROM lessons WHERE id = $1`
 	queryGetLessonsByCourse = `SELECT * FROM lessons WHERE course_id = $1`
 	queryCreateLesson       = `INSERT INTO lessons VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`
-	queryUpdateLesson       = `UPDATE lessons SET course_id = $1, title = $2, slug = $3, category = $4, order = $5 WHERE id = $6 RETURNING *`
+	queryUpdateLesson       = `UPDATE lessons SET course_id = $1, title = $2, slug = $3, category = $4, sorting_order = $5 WHERE id = $6 RETURNING *`
 	queryDeleteLesson       = `DELETE FROM lessons WHERE id = $1`
 )
 
