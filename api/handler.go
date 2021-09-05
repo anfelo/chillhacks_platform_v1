@@ -1,9 +1,6 @@
 package api
 
 import (
-	"log"
-	"net/http"
-
 	"github.com/anfelo/chillhacks_platform/courses"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -52,13 +49,4 @@ type Handler struct {
 	*chi.Mux
 
 	store courses.Store
-}
-
-func setupResponse(w http.ResponseWriter, contentType string, body []byte, statusCode int) {
-	w.Header().Set("Content-Type", contentType)
-	w.WriteHeader(statusCode)
-	_, err := w.Write(body)
-	if err != nil {
-		log.Println(err)
-	}
 }

@@ -1,9 +1,12 @@
 package api
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/anfelo/chillhacks_platform/courses"
+	"github.com/anfelo/chillhacks_platform/utils/http_utils"
 	"github.com/go-chi/chi"
 	"github.com/google/uuid"
 )
@@ -26,28 +29,87 @@ func (h *CourseHandler) Show() http.HandlerFunc {
 			return
 		}
 
-		serializer := &courses.CourseSerializer{}
-		resBody, err := serializer.Encode(&c)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		setupResponse(w, "application/json", resBody, http.StatusOK)
+		http_utils.RespondJson(w, http.StatusOK, c)
 	}
 }
 
 func (h *CourseHandler) List() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {}
+	return func(w http.ResponseWriter, r *http.Request) {
+		cc, err := h.store.Courses()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		ccRes := courses.CoursesResponse{
+			Count:   len(cc),
+			Results: cc,
+		}
+		http_utils.RespondJson(w, http.StatusOK, ccRes)
+	}
 }
 
 func (h *CourseHandler) Create() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {}
+	return func(w http.ResponseWriter, r *http.Request) {
+		reqBody, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer r.Body.Close()
+
+		var c courses.Course
+		if err := json.Unmarshal(reqBody, &c); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		if err := h.store.CreateCourse(&c); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		http_utils.RespondJson(w, http.StatusCreated, c)
+	}
 }
 
 func (h *CourseHandler) Update() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {}
+	return func(w http.ResponseWriter, r *http.Request) {
+		reqBody, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer r.Body.Close()
+
+		var c courses.Course
+		if err := json.Unmarshal(reqBody, &c); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		if err := h.store.UpdateCourse(&c); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		http_utils.RespondJson(w, http.StatusOK, c)
+	}
 }
 
 func (h *CourseHandler) Delete() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {}
+	return func(w http.ResponseWriter, r *http.Request) {
+		idStr := chi.URLParam(r, "id")
+		id, err := uuid.Parse(idStr)
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+
+		err = h.store.DeleteCourse(id)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		http_utils.RespondJson(w, http.StatusOK, map[string]string{"success": "true"})
+	}
 }

@@ -12,6 +12,11 @@ type Course struct {
 	ImgURL       string    `json:"img_url" db:"img_url"`
 }
 
+type CoursesResponse struct {
+	Count   int      `json:"count"`
+	Results []Course `json:"results"`
+}
+
 type Lesson struct {
 	ID       uuid.UUID `json:"id" db:"id"`
 	CourseID uuid.UUID `json:"course_id" db:"course_id"`

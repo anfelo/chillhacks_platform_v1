@@ -37,11 +37,11 @@ type CourseStore struct {
 }
 
 func (s *CourseStore) Course(id uuid.UUID) (courses.Course, error) {
-	var t courses.Course
-	if err := s.Get(&t, queryGetCourse, id); err != nil {
+	var c courses.Course
+	if err := s.Get(&c, queryGetCourse, id); err != nil {
 		return courses.Course{}, fmt.Errorf("error getting course: %w", err)
 	}
-	return t, nil
+	return c, nil
 }
 
 func (s *CourseStore) Courses() ([]courses.Course, error) {
