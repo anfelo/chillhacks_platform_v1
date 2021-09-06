@@ -12,7 +12,7 @@ const (
 	queryGetSubject    = `SELECT * FROM subjects WHERE id = $1`
 	queryGetSubjects   = `SELECT * FROM subjects`
 	queryCreateSubject = `INSERT INTO subjects VALUES ($1, $2, $3) RETURNING *`
-	queryUpdateSubject = `UPDATE subjects SET title = $1, description = $2 WHERE id = $3 RETURNING *`
+	queryUpdateSubject = `UPDATE subjects SET title = $1, img_url = $2 WHERE id = $3 RETURNING *`
 	queryDeleteSubject = `DELETE FROM subjects WHERE id = $1`
 )
 
@@ -38,7 +38,7 @@ func (s *SubjectStore) Subjects() ([]courses.Subject, error) {
 
 func (s *SubjectStore) CreateSubject(su *courses.Subject) error {
 	if err := s.Get(su, queryCreateSubject,
-		su.ID,
+		uuid.New(),
 		su.Title,
 		su.ImgURL); err != nil {
 		return fmt.Errorf("error creating subject: %w", err)

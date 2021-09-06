@@ -38,7 +38,7 @@ func (s *LessonStore) LessonsByCourse(courseID uuid.UUID) ([]courses.Lesson, err
 
 func (s *LessonStore) CreateLesson(l *courses.Lesson) error {
 	if err := s.Get(l, queryCreateLesson,
-		l.ID,
+		uuid.New(),
 		l.CourseID,
 		l.Title,
 		l.Slug,

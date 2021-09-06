@@ -18,16 +18,15 @@ func main() {
 		log.Fatal(err)
 	}
 
-	csrfKey := []byte("012345678901234567890123456789")
-	h := api.NewHandler(store, csrfKey)
-	fmt.Println("Listening on port :8000")
+	h := api.NewHandler(store)
+	fmt.Println("Listening on port :3000")
 	if err := http.ListenAndServe(httpPort(), h); err != nil {
 		panic(err)
 	}
 }
 
 func httpPort() string {
-	port := "8000"
+	port := "3000"
 	if os.Getenv("PORT") != "" {
 		port = os.Getenv("PORT")
 	}

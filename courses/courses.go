@@ -26,10 +26,20 @@ type Lesson struct {
 	Order    int       `json:"sorting_order" db:"sorting_order"`
 }
 
+type LessonsResponse struct {
+	Count   int      `json:"count"`
+	Results []Lesson `json:"results"`
+}
+
 type Subject struct {
 	ID     uuid.UUID `json:"id" db:"id"`
 	Title  string    `json:"title" db:"title"`
 	ImgURL string    `json:"img_url" db:"img_url"`
+}
+
+type SubjectsResponse struct {
+	Count   int       `json:"count"`
+	Results []Subject `json:"results"`
 }
 
 type CourseStore interface {
