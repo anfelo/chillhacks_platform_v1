@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"github.com/anfelo/chillhacks_platform/datastores/postgres"
 )
 
-func main() {
+func StartApplication() {
 	dsn := "postgres://postgres:secret@localhost/postgres?sslmode=disable"
 
 	store, err := postgres.NewStore(dsn)
