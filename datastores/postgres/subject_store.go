@@ -37,8 +37,9 @@ func (s *SubjectStore) Subjects() ([]courses.Subject, error) {
 }
 
 func (s *SubjectStore) CreateSubject(su *courses.Subject) error {
+	su.ID = uuid.New()
 	if err := s.Get(su, queryCreateSubject,
-		uuid.New(),
+		su.ID,
 		su.Title,
 		su.ImgURL); err != nil {
 		return fmt.Errorf("error creating subject: %w", err)

@@ -15,6 +15,7 @@ func NewHandler(store courses.Store) *Handler {
 	courses := CourseHandler{store: store}
 	lessons := LessonHandler{store: store}
 	subjects := SubjectHandler{store: store}
+	seeder := SeederHandler{store: store}
 
 	h.Use(middleware.Logger)
 
@@ -38,6 +39,7 @@ func NewHandler(store courses.Store) *Handler {
 		r.Put("/{id}", subjects.Update())
 		r.Delete("/{id}", subjects.Delete())
 	})
+	h.Post("/seed", seeder.Seed())
 
 	return h
 }

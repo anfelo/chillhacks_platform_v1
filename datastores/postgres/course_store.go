@@ -61,8 +61,9 @@ func (s *CourseStore) CoursesBySubject(subjectID uuid.UUID) ([]courses.Course, e
 }
 
 func (s *CourseStore) CreateCourse(c *courses.Course) error {
+	c.ID = uuid.New()
 	if err := s.Get(c, queryCreateCourse,
-		uuid.New(),
+		c.ID,
 		c.SubjectID,
 		c.Title,
 		c.Description,
