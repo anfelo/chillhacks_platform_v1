@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/anfelo/chillhacks_platform/courses"
 	"github.com/anfelo/chillhacks_platform/utils/http_utils"
@@ -35,16 +36,35 @@ func (h *CourseHandler) Show() http.HandlerFunc {
 
 func (h *CourseHandler) List() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		cc, err := h.store.Courses()
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+		suIdStr := strings.TrimSpace(r.URL.Query().Get("subject"))
+		var ccRes courses.CoursesResponse
+		if suIdStr != "" {
+			suID, err := uuid.Parse(suIdStr)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+			cc, err := h.store.CoursesBySubject(suID)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			ccRes = courses.CoursesResponse{
+				Count:   len(cc),
+				Results: cc,
+			}
+		} else {
+			cc, err := h.store.Courses()
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			ccRes = courses.CoursesResponse{
+				Count:   len(cc),
+				Results: cc,
+			}
 		}
 
-		ccRes := courses.CoursesResponse{
-			Count:   len(cc),
-			Results: cc,
-		}
 		http_utils.RespondJson(w, http.StatusOK, ccRes)
 	}
 }
