@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/anfelo/chillhacks_platform/courses"
 	"github.com/google/uuid"
@@ -11,8 +12,8 @@ import (
 const (
 	queryGetLesson          = `SELECT * FROM lessons WHERE id = $1`
 	queryGetLessonsByCourse = `SELECT * FROM lessons WHERE course_id = $1`
-	queryCreateLesson       = `INSERT INTO lessons VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`
-	queryUpdateLesson       = `UPDATE lessons SET course_id = $1, title = $2, slug = $3, category = $4, sorting_order = $5 WHERE id = $6 RETURNING *`
+	queryCreateLesson       = `INSERT INTO lessons(id, course_id, title, content, slug, category, sorting_order, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`
+	queryUpdateLesson       = `UPDATE lessons SET course_id = $1, title = $2, content = $3, slug = $4, category = $5, sorting_order = $6, updated_at = $7 WHERE id = $8 RETURNING *`
 	queryDeleteLesson       = `DELETE FROM lessons WHERE id = $1`
 )
 
@@ -38,26 +39,34 @@ func (s *LessonStore) LessonsByCourse(courseID uuid.UUID) ([]courses.Lesson, err
 
 func (s *LessonStore) CreateLesson(l *courses.Lesson) error {
 	l.ID = uuid.New()
+	l.CreatedAt = time.Now()
+	l.UpdatedAt = time.Now()
 	if err := s.Get(l, queryCreateLesson,
 		l.ID,
 		l.CourseID,
 		l.Title,
+		l.Content,
 		l.Slug,
 		l.Category,
-		l.Order); err != nil {
+		l.Order,
+		l.CreatedAt,
+		l.UpdatedAt); err != nil {
 		return fmt.Errorf("error creating lesson: %w", err)
 	}
 	return nil
 }
 
 func (s *LessonStore) UpdateLesson(l *courses.Lesson) error {
+	l.UpdatedAt = time.Now()
 	var query = queryUpdateLesson
 	if err := s.Get(l, query,
 		l.CourseID,
 		l.Title,
+		l.Content,
 		l.Slug,
 		l.Category,
 		l.Order,
+		l.UpdatedAt,
 		l.ID); err != nil {
 		return fmt.Errorf("error updating lesson: %w", err)
 	}

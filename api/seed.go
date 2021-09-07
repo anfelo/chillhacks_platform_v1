@@ -14,9 +14,9 @@ type SeederHandler struct {
 func (h *SeederHandler) Seed() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var ss []courses.Subject
-		s1 := courses.Subject{Title: "Software Fundamentals", ImgURL: "software-fundamentals.png"}
-		s2 := courses.Subject{Title: "Python", ImgURL: "python.png"}
-		s3 := courses.Subject{Title: "VueJS", ImgURL: "vue.png"}
+		s1 := courses.Subject{Title: "Software Fundamentals", Slug: "software-fundamentals", ImgURL: "software-fundamentals.png"}
+		s2 := courses.Subject{Title: "Python", Slug: "python", ImgURL: "python.png"}
+		s3 := courses.Subject{Title: "VueJS", Slug: "vuejs", ImgURL: "vue.png"}
 		ss = append(ss, s1, s2, s3)
 
 		for i, s := range ss {
@@ -53,7 +53,7 @@ func (h *SeederHandler) Seed() http.HandlerFunc {
 			SubjectID:   ss[2].ID,
 			Title:       "Vue Composition Api",
 			Description: "What makes the Vue 3 Composition API so much better than the Options API is code sharing. Inside the setup hook of a component, we can group parts of our code by logical concern. We then can extract pieces of reactive logic and share the code with other components.",
-			Slug:        "python-practical-guide",
+			Slug:        "vue-composition-api",
 			ImgURL:      "python.png",
 		}
 		cc = append(cc, c1, c2, c3, c4)
@@ -70,6 +70,7 @@ func (h *SeederHandler) Seed() http.HandlerFunc {
 		l1 := courses.Lesson{
 			CourseID: cc[0].ID,
 			Title:    "Factory Method",
+			Content:  "Here goes some content",
 			Slug:     "factory-method",
 			Category: "creational-patterns",
 			Order:    1,

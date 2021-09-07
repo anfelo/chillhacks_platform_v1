@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/anfelo/chillhacks_platform/courses"
 	"github.com/google/uuid"
@@ -27,8 +28,8 @@ const (
 		WHERE subject_id = $1
 		GROUP BY courses.id
 	`
-	queryCreateCourse = `INSERT INTO courses VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`
-	queryUpdateCourse = `UPDATE courses SET subject_id = $1, title = $2, description = $3, slug = $4, img_url = $5 WHERE id = $6 RETURNING *`
+	queryCreateCourse = `INSERT INTO courses(id, subject_id, title, description, slug, img_url, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`
+	queryUpdateCourse = `UPDATE courses SET subject_id = $1, title = $2, description = $3, slug = $4, img_url = $5, updated_at = $6 WHERE id = $7 RETURNING *`
 	queryDeleteCourse = `DELETE FROM courses WHERE id = $1`
 )
 
@@ -62,25 +63,31 @@ func (s *CourseStore) CoursesBySubject(subjectID uuid.UUID) ([]courses.Course, e
 
 func (s *CourseStore) CreateCourse(c *courses.Course) error {
 	c.ID = uuid.New()
+	c.CreatedAt = time.Now()
+	c.UpdatedAt = time.Now()
 	if err := s.Get(c, queryCreateCourse,
 		c.ID,
 		c.SubjectID,
 		c.Title,
 		c.Description,
 		c.Slug,
-		c.ImgURL); err != nil {
+		c.ImgURL,
+		c.CreatedAt,
+		c.UpdatedAt); err != nil {
 		return fmt.Errorf("error creating course: %w", err)
 	}
 	return nil
 }
 
 func (s *CourseStore) UpdateCourse(c *courses.Course) error {
+	c.UpdatedAt = time.Now()
 	if err := s.Get(c, queryUpdateCourse,
 		c.SubjectID,
 		c.Title,
 		c.Description,
 		c.Slug,
 		c.ImgURL,
+		c.UpdatedAt,
 		c.ID); err != nil {
 		return fmt.Errorf("error updating course: %w", err)
 	}

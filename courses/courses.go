@@ -1,6 +1,10 @@
 package courses
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type Course struct {
 	ID           uuid.UUID `json:"id" db:"id"`
@@ -10,6 +14,8 @@ type Course struct {
 	Slug         string    `json:"slug" db:"slug"`
 	LessonsCount int       `json:"lessons_count" db:"lessons_count"`
 	ImgURL       string    `json:"img_url" db:"img_url"`
+	CreatedAt    time.Time `json:"created" db:"created_at"`
+	UpdatedAt    time.Time `json:"updated" db:"updated_at"`
 }
 
 type CoursesResponse struct {
@@ -18,12 +24,15 @@ type CoursesResponse struct {
 }
 
 type Lesson struct {
-	ID       uuid.UUID `json:"id" db:"id"`
-	CourseID uuid.UUID `json:"course_id" db:"course_id"`
-	Title    string    `json:"title" db:"title"`
-	Slug     string    `json:"slug" db:"slug"`
-	Category string    `json:"category" db:"category"`
-	Order    int       `json:"sorting_order" db:"sorting_order"`
+	ID        uuid.UUID `json:"id" db:"id"`
+	CourseID  uuid.UUID `json:"course_id" db:"course_id"`
+	Title     string    `json:"title" db:"title"`
+	Content   string    `json:"content" db:"content"`
+	Slug      string    `json:"slug" db:"slug"`
+	Category  string    `json:"category" db:"category"`
+	Order     int       `json:"sorting_order" db:"sorting_order"`
+	CreatedAt time.Time `json:"created" db:"created_at"`
+	UpdatedAt time.Time `json:"updated" db:"updated_at"`
 }
 
 type LessonsResponse struct {
@@ -32,9 +41,12 @@ type LessonsResponse struct {
 }
 
 type Subject struct {
-	ID     uuid.UUID `json:"id" db:"id"`
-	Title  string    `json:"title" db:"title"`
-	ImgURL string    `json:"img_url" db:"img_url"`
+	ID        uuid.UUID `json:"id" db:"id"`
+	Title     string    `json:"title" db:"title"`
+	ImgURL    string    `json:"img_url" db:"img_url"`
+	Slug      string    `json:"slug" db:"slug"`
+	CreatedAt time.Time `json:"created" db:"created_at"`
+	UpdatedAt time.Time `json:"updated" db:"updated_at"`
 }
 
 type SubjectsResponse struct {
