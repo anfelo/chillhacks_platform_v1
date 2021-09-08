@@ -10,8 +10,18 @@ import (
 	"github.com/anfelo/chillhacks_platform/datastores/postgres"
 )
 
+var (
+	pguser = os.Getenv("PGUSER")
+	pghost = os.Getenv("PGHOST")
+	pgport = os.Getenv("PGPORT")
+	pgdb   = os.Getenv("PGDATABASE")
+	pgpw   = os.Getenv("PGPASSWORD")
+)
+
 func StartApplication() {
-	dsn := "postgres://postgres:secret@localhost/postgres?sslmode=disable"
+	dsn := fmt.Sprintf("%s://%s:%s@%s/%s?sslmode=disable",
+		pguser, pgpw, pghost, pgport, pgdb,
+	)
 
 	store, err := postgres.NewStore(dsn)
 	if err != nil {
