@@ -55,6 +55,7 @@ type SubjectsResponse struct {
 }
 
 type CourseStore interface {
+	CreateCoursesTable() error
 	Course(id uuid.UUID) (Course, error)
 	Courses() ([]Course, error)
 	CoursesBySubject(subjectID uuid.UUID) ([]Course, error)
@@ -64,6 +65,7 @@ type CourseStore interface {
 }
 
 type LessonStore interface {
+	CreateLessonsTable() error
 	Lesson(id uuid.UUID) (Lesson, error)
 	LessonsByCourse(courseID uuid.UUID) ([]Lesson, error)
 	CreateLesson(l *Lesson) error
@@ -72,6 +74,7 @@ type LessonStore interface {
 }
 
 type SubjectStore interface {
+	CreateSubjectsTable() error
 	Subject(id uuid.UUID) (Subject, error)
 	Subjects() ([]Subject, error)
 	CreateSubject(s *Subject) error

@@ -28,13 +28,32 @@ const (
 		WHERE subject_id = $1
 		GROUP BY courses.id
 	`
-	queryCreateCourse = `INSERT INTO courses(id, subject_id, title, description, slug, img_url, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`
-	queryUpdateCourse = `UPDATE courses SET subject_id = $1, title = $2, description = $3, slug = $4, img_url = $5, updated_at = $6 WHERE id = $7 RETURNING *`
-	queryDeleteCourse = `DELETE FROM courses WHERE id = $1`
+	queryCreateCourse       = `INSERT INTO courses(id, subject_id, title, description, slug, img_url, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`
+	queryUpdateCourse       = `UPDATE courses SET subject_id = $1, title = $2, description = $3, slug = $4, img_url = $5, updated_at = $6 WHERE id = $7 RETURNING *`
+	queryDeleteCourse       = `DELETE FROM courses WHERE id = $1`
+	queryCreateCoursesTable = `
+		CREATE TABLE courses (
+			id UUID PRIMARY KEY,
+			subject_id UUID NOT NULL REFERENCES subjects (id) ON DELETE CASCADE,
+			title TEXT NOT NULL,
+			description TEXT NOT NULL,
+			img_url TEXT NOT NULL,
+			slug TEXT NOT NULL UNIQUE,
+			created_at TIMESTAMP NOT NULL,
+			updated_at TIMESTAMP NOT NULL
+		)
+	`
 )
 
 type CourseStore struct {
 	*sqlx.DB
+}
+
+func (s *CourseStore) CreateCoursesTable() error {
+	if _, err := s.Exec(queryCreateCoursesTable); err != nil {
+		return fmt.Errorf("error creating courses table: %w", err)
+	}
+	return nil
 }
 
 func (s *CourseStore) Course(id uuid.UUID) (courses.Course, error) {

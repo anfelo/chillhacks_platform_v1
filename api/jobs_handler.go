@@ -7,11 +7,11 @@ import (
 	"github.com/anfelo/chillhacks_platform/utils/http_utils"
 )
 
-type SeederHandler struct {
+type JobHandler struct {
 	store courses.Store
 }
 
-func (h *SeederHandler) Seed() http.HandlerFunc {
+func (h *JobHandler) Seed() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var ss []courses.Subject
 		s1 := courses.Subject{Title: "Software Fundamentals", Slug: "software-fundamentals", ImgURL: "software-fundamentals.png"}
@@ -91,5 +91,25 @@ func (h *SeederHandler) Seed() http.HandlerFunc {
 		res["lessons"] = ll
 
 		http_utils.RespondJson(w, http.StatusCreated, res)
+	}
+}
+
+func (h *JobHandler) CreateTables() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		err := h.store.CreateSubjectsTable()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		err = h.store.CreateCoursesTable()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		err = h.store.CreateLessonsTable()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 }

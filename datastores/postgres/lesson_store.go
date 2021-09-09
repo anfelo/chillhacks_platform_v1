@@ -15,10 +15,30 @@ const (
 	queryCreateLesson       = `INSERT INTO lessons(id, course_id, title, content, slug, category, sorting_order, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`
 	queryUpdateLesson       = `UPDATE lessons SET course_id = $1, title = $2, content = $3, slug = $4, category = $5, sorting_order = $6, updated_at = $7 WHERE id = $8 RETURNING *`
 	queryDeleteLesson       = `DELETE FROM lessons WHERE id = $1`
+	queryCreateLessonsTable = `
+		CREATE TABLE lessons (
+			id UUID PRIMARY KEY,
+			course_id UUID NOT NULL REFERENCES courses (id) ON DELETE CASCADE,
+			title TEXT NOT NULL,
+			content TEXT NOT NULL,
+			slug TEXT NOT NULL UNIQUE,
+			category TEXT NOT NULL,
+			sorting_order INT NOT NULL,
+			created_at TIMESTAMP NOT NULL,
+			updated_at TIMESTAMP NOT NULL
+		)
+	`
 )
 
 type LessonStore struct {
 	*sqlx.DB
+}
+
+func (s *CourseStore) CreateLessonsTable() error {
+	if _, err := s.Exec(queryCreateLessonsTable); err != nil {
+		return fmt.Errorf("error creating lessons table: %w", err)
+	}
+	return nil
 }
 
 func (s *LessonStore) Lesson(id uuid.UUID) (courses.Lesson, error) {

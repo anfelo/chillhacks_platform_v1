@@ -10,15 +10,32 @@ import (
 )
 
 const (
-	queryGetSubject    = `SELECT * FROM subjects WHERE id = $1`
-	queryGetSubjects   = `SELECT * FROM subjects`
-	queryCreateSubject = `INSERT INTO subjects(id, title, slug, img_url, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`
-	queryUpdateSubject = `UPDATE subjects SET title = $1, slug = $2, img_url = $3, updated_at = $4 WHERE id = $5 RETURNING *`
-	queryDeleteSubject = `DELETE FROM subjects WHERE id = $1`
+	queryGetSubject          = `SELECT * FROM subjects WHERE id = $1`
+	queryGetSubjects         = `SELECT * FROM subjects`
+	queryCreateSubject       = `INSERT INTO subjects(id, title, slug, img_url, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`
+	queryUpdateSubject       = `UPDATE subjects SET title = $1, slug = $2, img_url = $3, updated_at = $4 WHERE id = $5 RETURNING *`
+	queryDeleteSubject       = `DELETE FROM subjects WHERE id = $1`
+	queryCreateSubjectsTable = `
+		CREATE TABLE subjects (
+			id UUID PRIMARY KEY,
+			title TEXT NOT NULL,
+			img_url TEXT NOT NULL,
+			slug TEXT NOT NULL UNIQUE,
+			created_at TIMESTAMP NOT NULL,
+			updated_at TIMESTAMP NOT NULL
+		)
+	`
 )
 
 type SubjectStore struct {
 	*sqlx.DB
+}
+
+func (s *CourseStore) CreateSubjectsTable() error {
+	if _, err := s.Exec(queryCreateSubjectsTable); err != nil {
+		return fmt.Errorf("error creating subjects table: %w", err)
+	}
+	return nil
 }
 
 func (s *SubjectStore) Subject(id uuid.UUID) (courses.Subject, error) {

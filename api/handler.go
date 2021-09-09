@@ -15,7 +15,7 @@ func NewHandler(store courses.Store) *Handler {
 	courses := CourseHandler{store: store}
 	lessons := LessonHandler{store: store}
 	subjects := SubjectHandler{store: store}
-	seeder := SeederHandler{store: store}
+	jobs := JobHandler{store: store}
 
 	h.Use(middleware.Logger)
 
@@ -40,7 +40,10 @@ func NewHandler(store courses.Store) *Handler {
 			r.Put("/{id}", subjects.Update())
 			r.Delete("/{id}", subjects.Delete())
 		})
-		r.Post("/seed", seeder.Seed())
+		r.Route("/jobs", func(r chi.Router) {
+			r.Post("/seed", jobs.Seed())
+			r.Post("/create-tables", jobs.CreateTables())
+		})
 	})
 
 	return h
