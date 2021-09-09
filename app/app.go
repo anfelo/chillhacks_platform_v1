@@ -19,7 +19,7 @@ var (
 )
 
 func StartApplication() {
-	dsn := fmt.Sprintf("%s://%s:%s@%s/%s?sslmode=disable",
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		pguser, pgpw, pghost, pgport, pgdb,
 	)
 
