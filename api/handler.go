@@ -4,6 +4,7 @@ import (
 	"github.com/anfelo/chillhacks_platform/courses"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/cors"
 )
 
 func NewHandler(store courses.Store) *Handler {
@@ -20,6 +21,14 @@ func NewHandler(store courses.Store) *Handler {
 	h.Use(middleware.Logger)
 
 	h.Route("/api", func(r chi.Router) {
+		r.Use(cors.Handler(cors.Options{
+			AllowedOrigins:   []string{"https://*", "http://*"},
+			AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+			AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+			ExposedHeaders:   []string{"Link"},
+			AllowCredentials: true,
+			MaxAge:           300,
+		}))
 		r.Route("/courses", func(r chi.Router) {
 			r.Get("/{id}", courses.Show())
 			r.Get("/", courses.List())
