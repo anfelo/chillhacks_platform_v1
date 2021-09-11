@@ -22,14 +22,12 @@ func NewHandler(store courses.Store) *Handler {
 
 	h.Route("/api", func(r chi.Router) {
 		r.Use(cors.Handler(cors.Options{
-			AllowedOrigins:   []string{"https://*", "http://*"},
-			AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-			AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
-			ExposedHeaders:   []string{"Link"},
-			AllowCredentials: true,
-			MaxAge:           300,
+			AllowedOrigins: []string{"https://*", "http://*", "*"},
 		}))
 		r.Route("/courses", func(r chi.Router) {
+			r.Use(cors.Handler(cors.Options{
+				AllowedOrigins: []string{"https://*", "http://*", "*"},
+			}))
 			r.Get("/{id}", courses.Show())
 			r.Get("/", courses.List())
 			r.Post("/", courses.Create())
