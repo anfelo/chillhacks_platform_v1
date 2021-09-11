@@ -19,15 +19,12 @@ func NewHandler(store courses.Store) *Handler {
 	jobs := JobHandler{store: store}
 
 	h.Use(middleware.Logger)
+	h.Use(cors.Handler(cors.Options{
+		AllowedOrigins: []string{"https://*", "http://*", "*"},
+	}))
 
 	h.Route("/api", func(r chi.Router) {
-		r.Use(cors.Handler(cors.Options{
-			AllowedOrigins: []string{"https://*", "http://*", "*"},
-		}))
 		r.Route("/courses", func(r chi.Router) {
-			r.Use(cors.Handler(cors.Options{
-				AllowedOrigins: []string{"https://*", "http://*", "*"},
-			}))
 			r.Get("/{id}", courses.Show())
 			r.Get("/", courses.List())
 			r.Post("/", courses.Create())
