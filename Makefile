@@ -1,10 +1,17 @@
-.PHONY: postgres adminer migrate
+.PHONY: postgres adminer migrate platform
 
 postgres:
 	docker run --rm -ti --network host -e POSTGRES_PASSWORD=secret postgres
 
 adminer:
 	docker run --rm -ti --network host adminer
+
+platform:
+	export PGUSER="postgres" && \
+	export PGHOST="localhost" && \
+	export PGDATABASE="postgres" && \
+	export PGPASSWORD="secret" && \
+	reflex -s go run main.go
 
 migrate:
 	migrate -source file://migrations \

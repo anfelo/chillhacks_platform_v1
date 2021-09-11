@@ -10,7 +10,15 @@ import (
 )
 
 const (
-	queryGetCourse  = `SELECT * FROM courses WHERE id = $1`
+	queryGetCourse = `
+		SELECT
+			courses.*,
+			COUNT(lessons.*) AS lessons_count
+		FROM courses
+		LEFT JOIN lessons ON lessons.course_id = courses.id
+		WHERE courses.id = $1
+		GROUP BY courses.id
+	`
 	queryGetCourses = `
 		SELECT
 			courses.*,
