@@ -28,7 +28,12 @@ func StartApplication() {
 		log.Fatal(err)
 	}
 
-	h := api.NewHandler(store)
+	sessions, err := api.NewSessionManager(dsn)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	h := api.NewHandler(store, sessions)
 	fmt.Println("Listening on port :3000")
 	if err := http.ListenAndServe(httpPort(), h); err != nil {
 		panic(err)

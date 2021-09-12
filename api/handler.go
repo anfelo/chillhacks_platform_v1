@@ -1,27 +1,38 @@
 package api
 
 import (
+	"context"
+	"net/http"
+
+	"github.com/alexedwards/scs/v2"
 	"github.com/anfelo/chillhacks_platform/courses"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
+	"github.com/google/uuid"
 )
 
-func NewHandler(store courses.Store) *Handler {
+func NewHandler(
+	store courses.Store,
+	sessions *scs.SessionManager) *Handler {
 	h := &Handler{
-		Mux:   chi.NewMux(),
-		store: store,
+		Mux:      chi.NewMux(),
+		store:    store,
+		sessions: sessions,
 	}
 
-	courses := CourseHandler{store: store}
-	lessons := LessonHandler{store: store}
-	subjects := SubjectHandler{store: store}
-	jobs := JobHandler{store: store}
+	courses := CourseHandler{store: store, sessions: sessions}
+	lessons := LessonHandler{store: store, sessions: sessions}
+	subjects := SubjectHandler{store: store, sessions: sessions}
+	jobs := JobHandler{store: store, sessions: sessions}
+	users := UserHandler{store: store, sessions: sessions}
 
 	h.Use(middleware.Logger)
 	h.Use(cors.Handler(cors.Options{
 		AllowedOrigins: []string{"https://*", "http://*", "*"},
 	}))
+	h.Use(sessions.LoadAndSave)
+	h.Use(h.withUser)
 
 	h.Route("/api", func(r chi.Router) {
 		r.Route("/courses", func(r chi.Router) {
@@ -50,11 +61,34 @@ func NewHandler(store courses.Store) *Handler {
 		})
 	})
 
+	h.Route("/auth", func(r chi.Router) {
+		r.Get("/currentuser", users.CurrentUser())
+		r.Post("/register", users.RegisterSubmit())
+		r.Post("/login", users.LoginSubmit())
+		r.Get("/logout", users.Logout())
+	})
+
 	return h
 }
 
 type Handler struct {
 	*chi.Mux
 
-	store courses.Store
+	store    courses.Store
+	sessions *scs.SessionManager
+}
+
+func (h *Handler) withUser(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		id, _ := h.sessions.Get(r.Context(), "user_id").(uuid.UUID)
+
+		user, err := h.store.User(id)
+		if err != nil {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), "user", user)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
 }

@@ -86,4 +86,5 @@ type Store interface {
 	CourseStore
 	LessonStore
 	SubjectStore
+	UserStore
 }
