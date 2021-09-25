@@ -11,7 +11,11 @@ import (
 
 const (
 	queryGetLesson          = `SELECT * FROM lessons WHERE id = $1`
-	queryGetLessonsByCourse = `SELECT * FROM lessons WHERE course_id = $1`
+	queryGetLessonsByCourse = `
+		SELECT * FROM lessons
+		WHERE course_id = $1
+		ORDER BY sorting_order ASC
+	`
 	queryCreateLesson       = `INSERT INTO lessons(id, course_id, title, content, slug, category, sorting_order, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`
 	queryUpdateLesson       = `UPDATE lessons SET course_id = $1, title = $2, content = $3, slug = $4, category = $5, sorting_order = $6, updated_at = $7 WHERE id = $8 RETURNING *`
 	queryDeleteLesson       = `DELETE FROM lessons WHERE id = $1`

@@ -3,12 +3,15 @@ package api
 import (
 	"net/http"
 
+	"github.com/alexedwards/scs/v2"
 	"github.com/anfelo/chillhacks_platform/courses"
+	"github.com/anfelo/chillhacks_platform/utils/errors"
 	"github.com/anfelo/chillhacks_platform/utils/http_utils"
 )
 
 type JobHandler struct {
-	store courses.Store
+	store    courses.Store
+	sessions *scs.SessionManager
 }
 
 func (h *JobHandler) Seed() http.HandlerFunc {
@@ -21,7 +24,8 @@ func (h *JobHandler) Seed() http.HandlerFunc {
 
 		for i, s := range ss {
 			if err := h.store.CreateSubject(&s); err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				restErr := errors.NewInternatServerError("internal server error")
+				http_utils.RespondJson(w, restErr.Status, restErr)
 				return
 			}
 			ss[i] = s
@@ -60,7 +64,8 @@ func (h *JobHandler) Seed() http.HandlerFunc {
 
 		for i, c := range cc {
 			if err := h.store.CreateCourse(&c); err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				restErr := errors.NewInternatServerError("internal server error")
+				http_utils.RespondJson(w, restErr.Status, restErr)
 				return
 			}
 			cc[i] = c
@@ -79,7 +84,8 @@ func (h *JobHandler) Seed() http.HandlerFunc {
 
 		for i, l := range ll {
 			if err := h.store.CreateLesson(&l); err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				restErr := errors.NewInternatServerError("internal server error")
+				http_utils.RespondJson(w, restErr.Status, restErr)
 				return
 			}
 			ll[i] = l
@@ -98,17 +104,20 @@ func (h *JobHandler) CreateTables() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		err := h.store.CreateSubjectsTable()
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			restErr := errors.NewInternatServerError("internal server error")
+			http_utils.RespondJson(w, restErr.Status, restErr)
 			return
 		}
 		err = h.store.CreateCoursesTable()
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			restErr := errors.NewInternatServerError("internal server error")
+			http_utils.RespondJson(w, restErr.Status, restErr)
 			return
 		}
 		err = h.store.CreateLessonsTable()
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			restErr := errors.NewInternatServerError("internal server error")
+			http_utils.RespondJson(w, restErr.Status, restErr)
 			return
 		}
 	}

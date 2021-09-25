@@ -20,6 +20,7 @@ func NewStore(dataSourceName string) (*Store, error) {
 		CourseStore:  &CourseStore{DB: db},
 		LessonStore:  &LessonStore{DB: db},
 		SubjectStore: &SubjectStore{DB: db},
+		UserStore:    &UserStore{DB: db},
 	}, nil
 }
 
@@ -27,4 +28,5 @@ type Store struct {
 	*CourseStore
 	*LessonStore
 	*SubjectStore
+	*UserStore
 }
