@@ -38,7 +38,7 @@ type LessonStore struct {
 	*sqlx.DB
 }
 
-func (s *CourseStore) CreateLessonsTable() error {
+func (s *LessonStore) CreateLessonsTable() error {
 	if _, err := s.Exec(queryCreateLessonsTable); err != nil {
 		return fmt.Errorf("error creating lessons table: %w", err)
 	}
