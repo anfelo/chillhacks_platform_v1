@@ -9,6 +9,8 @@ type User struct {
 }
 
 type UserStore interface {
+	CreateSessionsTable() error
+	CreateUsersTable() error
 	User(id uuid.UUID) (User, error)
 	UserByUsername(username string) (User, error)
 	CreateUser(t *User) error

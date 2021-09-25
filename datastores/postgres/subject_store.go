@@ -31,7 +31,7 @@ type SubjectStore struct {
 	*sqlx.DB
 }
 
-func (s *CourseStore) CreateSubjectsTable() error {
+func (s *SubjectStore) CreateSubjectsTable() error {
 	if _, err := s.Exec(queryCreateSubjectsTable); err != nil {
 		return fmt.Errorf("error creating subjects table: %w", err)
 	}
