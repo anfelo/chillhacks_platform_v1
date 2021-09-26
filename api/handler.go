@@ -52,7 +52,6 @@ func NewHandler(
 			r.Delete("/{id}", h.authRequest(subjects.Delete()))
 		})
 		r.Route("/jobs", func(r chi.Router) {
-			r.Post("/seed", h.authRequest(jobs.Seed()))
 			r.Post("/create-tables", jobs.CreateTables())
 		})
 	})
