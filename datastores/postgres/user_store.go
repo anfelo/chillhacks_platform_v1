@@ -37,19 +37,21 @@ func (s *UserStore) Users() ([]courses.User, error) {
 }
 
 func (s *UserStore) CreateUser(u *courses.User) error {
-	if err := s.Get(u, `INSERT INTO users VALUES ($1, $2, $3) RETURNING *`,
+	if err := s.Get(u, `INSERT INTO users VALUES ($1, $2, $3, $4) RETURNING *`,
 		u.ID,
 		u.Username,
-		u.Password); err != nil {
+		u.Password,
+		u.Role); err != nil {
 		return fmt.Errorf("error creating user: %w", err)
 	}
 	return nil
 }
 
 func (s *UserStore) UpdateUser(u *courses.User) error {
-	if err := s.Get(u, `UPDATE users SET username = $1, password = $2 WHERE id = $3 RETURNING *`,
+	if err := s.Get(u, `UPDATE users SET username = $1, password = $2, role = $3 WHERE id = $4 RETURNING *`,
 		u.Username,
 		u.Password,
+		u.Role,
 		u.ID); err != nil {
 		return fmt.Errorf("error updating user: %w", err)
 	}

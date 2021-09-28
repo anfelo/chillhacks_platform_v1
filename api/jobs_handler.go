@@ -122,3 +122,9 @@ func (h *JobHandler) CreateTables() http.HandlerFunc {
 		}
 	}
 }
+
+func (h *JobHandler) RunMigrations() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Run migrations
+	}
+}
