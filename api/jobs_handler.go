@@ -2,13 +2,13 @@ package api
 
 import (
 	"io/ioutil"
-	"log"
 	"net/http"
 	"path/filepath"
 	"strings"
 
 	"github.com/alexedwards/scs/v2"
 	"github.com/anfelo/chillhacks_platform/courses"
+	"github.com/anfelo/chillhacks_platform/utils/errors"
 	"github.com/anfelo/chillhacks_platform/utils/http_utils"
 )
 
@@ -22,14 +22,18 @@ func (h *JobHandler) RunMigrations() http.HandlerFunc {
 		filePath, _ := filepath.Abs("./migrations")
 		files, err := getUpMigrationsFileNames(filePath)
 		if err != nil {
-			log.Fatal(err)
+			restErr := errors.NewInternatServerError("internal server error")
+			http_utils.RespondJson(w, restErr.Status, restErr)
+			return
 		}
 
 		errs := make(map[string]interface{})
 		for _, file := range files {
 			b, err := ioutil.ReadFile(filePath + "/" + file)
 			if err != nil {
-				log.Fatal(err)
+				restErr := errors.NewInternatServerError("internal server error")
+				http_utils.RespondJson(w, restErr.Status, restErr)
+				return
 			}
 			s := string(b)
 			if err := h.store.RunMigration(s); err != nil {
