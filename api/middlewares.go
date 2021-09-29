@@ -26,8 +26,20 @@ func (h *Handler) withUser(next http.Handler) http.Handler {
 
 func (h *Handler) authRequest(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		user := GetSessionData(h.sessions, r.Context())
-		if user.LoggedIn {
+		s := GetSessionData(h.sessions, r.Context())
+		if s.LoggedIn {
+			next.ServeHTTP(w, r)
+			return
+		}
+		restErr := errors.NewUnauthorizedError("unauthorized request")
+		http_utils.RespondJson(w, restErr.Status, restErr)
+	})
+}
+
+func (h *Handler) adminRequest(next http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		s := GetSessionData(h.sessions, r.Context())
+		if s.User.Role == "admin" {
 			next.ServeHTTP(w, r)
 			return
 		}
