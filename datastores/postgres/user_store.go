@@ -28,13 +28,6 @@ type UserStore struct {
 	*sqlx.DB
 }
 
-func (s *UserStore) CreateUsersTable() error {
-	if _, err := s.Exec(queryCreateUsersTable); err != nil {
-		return fmt.Errorf("error creating users table: %w", err)
-	}
-	return nil
-}
-
 func (s *UserStore) User(id uuid.UUID) (courses.User, error) {
 	var u courses.User
 	if err := s.Get(&u, queryGetUser, id); err != nil {

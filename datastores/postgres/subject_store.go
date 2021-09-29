@@ -31,13 +31,6 @@ type SubjectStore struct {
 	*sqlx.DB
 }
 
-func (s *SubjectStore) CreateSubjectsTable() error {
-	if _, err := s.Exec(queryCreateSubjectsTable); err != nil {
-		return fmt.Errorf("error creating subjects table: %w", err)
-	}
-	return nil
-}
-
 func (s *SubjectStore) Subject(id uuid.UUID) (courses.Subject, error) {
 	var su courses.Subject
 	if err := s.Get(&su, queryGetSubject, id); err != nil {
