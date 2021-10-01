@@ -17,6 +17,7 @@ func NewStore(dataSourceName string) (*Store, error) {
 	}
 
 	return &Store{
+		DB:           db,
 		CourseStore:  &CourseStore{DB: db},
 		LessonStore:  &LessonStore{DB: db},
 		SubjectStore: &SubjectStore{DB: db},
@@ -25,8 +26,17 @@ func NewStore(dataSourceName string) (*Store, error) {
 }
 
 type Store struct {
+	*sqlx.DB
+
 	*CourseStore
 	*LessonStore
 	*SubjectStore
 	*UserStore
+}
+
+func (s *Store) RunMigration(query string) error {
+	if _, err := s.Exec(query); err != nil {
+		return fmt.Errorf("error running migration: %w", err)
+	}
+	return nil
 }

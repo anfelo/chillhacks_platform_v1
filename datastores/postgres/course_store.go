@@ -57,13 +57,6 @@ type CourseStore struct {
 	*sqlx.DB
 }
 
-func (s *CourseStore) CreateCoursesTable() error {
-	if _, err := s.Exec(queryCreateCoursesTable); err != nil {
-		return fmt.Errorf("error creating courses table: %w", err)
-	}
-	return nil
-}
-
 func (s *CourseStore) Course(id uuid.UUID) (courses.Course, error) {
 	var c courses.Course
 	if err := s.Get(&c, queryGetCourse, id); err != nil {

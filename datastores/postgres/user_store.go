@@ -12,8 +12,8 @@ const (
 	queryGetUser           = `SELECT * FROM users WHERE id = $1`
 	queryGetUserByUsername = `SELECT * FROM users WHERE username = $1`
 	queryGetUsers          = `SELECT * FROM users`
-	queryCreateUser        = `INSERT INTO users VALUES ($1, $2, $3) RETURNING *`
-	queryUpdateUser        = `UPDATE users SET username = $1, password = $2 WHERE id = $3 RETURNING *`
+	queryCreateUser        = `INSERT INTO users VALUES ($1, $2, $3, $4) RETURNING *`
+	queryUpdateUser        = `UPDATE users SET username = $1, password = $2, role = $3 WHERE id = $4 RETURNING *`
 	queryDeleteUser        = `DELETE FROM users WHERE id = $1`
 	queryCreateUsersTable  = `
 		CREATE TABLE users (
@@ -26,13 +26,6 @@ const (
 
 type UserStore struct {
 	*sqlx.DB
-}
-
-func (s *UserStore) CreateUsersTable() error {
-	if _, err := s.Exec(queryCreateUsersTable); err != nil {
-		return fmt.Errorf("error creating users table: %w", err)
-	}
-	return nil
 }
 
 func (s *UserStore) User(id uuid.UUID) (courses.User, error) {
@@ -63,7 +56,8 @@ func (s *UserStore) CreateUser(u *courses.User) error {
 	if err := s.Get(u, queryCreateUser,
 		u.ID,
 		u.Username,
-		u.Password); err != nil {
+		u.Password,
+		u.Role); err != nil {
 		return fmt.Errorf("error creating user: %w", err)
 	}
 	return nil
@@ -73,6 +67,7 @@ func (s *UserStore) UpdateUser(u *courses.User) error {
 	if err := s.Get(u, queryUpdateUser,
 		u.Username,
 		u.Password,
+		u.Role,
 		u.ID); err != nil {
 		return fmt.Errorf("error updating user: %w", err)
 	}

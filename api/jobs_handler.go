@@ -1,10 +1,14 @@
 package api
 
 import (
+	"io/ioutil"
 	"net/http"
+	"path/filepath"
+	"strings"
 
 	"github.com/alexedwards/scs/v2"
 	"github.com/anfelo/chillhacks_platform/courses"
+	"github.com/anfelo/chillhacks_platform/utils/errors"
 	"github.com/anfelo/chillhacks_platform/utils/http_utils"
 )
 
@@ -13,39 +17,46 @@ type JobHandler struct {
 	sessions *scs.SessionManager
 }
 
-func (h *JobHandler) CreateTables() http.HandlerFunc {
+func (h *JobHandler) RunMigrations() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		filePath, _ := filepath.Abs("./migrations")
+		files, err := getUpMigrationsFileNames(filePath)
+		if err != nil {
+			restErr := errors.NewInternatServerError("internal server error")
+			http_utils.RespondJson(w, restErr.Status, restErr)
+			return
+		}
+
 		errs := make(map[string]interface{})
-		err := h.store.CreateSubjectsTable()
-		if err != nil {
-			errs["subjects"] = "table already created"
-		} else {
-			errs["subjects"] = "table created"
+		for _, file := range files {
+			b, err := ioutil.ReadFile(filePath + "/" + file)
+			if err != nil {
+				restErr := errors.NewInternatServerError("internal server error")
+				http_utils.RespondJson(w, restErr.Status, restErr)
+				return
+			}
+			s := string(b)
+			if err := h.store.RunMigration(s); err != nil {
+				errs[file] = err.Error()
+			} else {
+				errs[file] = "migration created"
+			}
 		}
-		err = h.store.CreateCoursesTable()
-		if err != nil {
-			errs["courses"] = "table already created"
-		} else {
-			errs["courses"] = "table created"
-		}
-		err = h.store.CreateLessonsTable()
-		if err != nil {
-			errs["lessons"] = "table already created"
-		} else {
-			errs["lessons"] = "table created"
-		}
-		err = h.store.CreateUsersTable()
-		if err != nil {
-			errs["users"] = "table already created"
-		} else {
-			errs["users"] = "table created"
-		}
-		err = h.store.CreateSessionsTable()
-		if err != nil {
-			errs["sessions"] = "table already created"
-		} else {
-			errs["sessions"] = "table created"
-		}
-		http_utils.RespondJson(w, http.StatusCreated, errs)
+
+		http_utils.RespondJson(w, http.StatusOK, errs)
 	}
+}
+
+func getUpMigrationsFileNames(root string) ([]string, error) {
+	var files []string
+	fileInfo, err := ioutil.ReadDir(root)
+	if err != nil {
+		return files, err
+	}
+	for _, file := range fileInfo {
+		if strings.Contains(file.Name(), ".up.sql") {
+			files = append(files, file.Name())
+		}
+	}
+	return files, nil
 }

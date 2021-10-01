@@ -67,6 +67,7 @@ func (h *UserHandler) RegisterSubmit() http.HandlerFunc {
 			ID:       uuid.New(),
 			Username: form.Username,
 			Password: string(password),
+			Role:     form.Role,
 		}
 		if err := h.store.CreateUser(&user); err != nil {
 			restErr := errors.NewInternatServerError("internal server error")

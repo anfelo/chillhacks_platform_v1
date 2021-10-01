@@ -13,6 +13,7 @@ type FormErrors map[string]string
 type RegisterForm struct {
 	Username      string `json:"username"`
 	Password      string `json:"password"`
+	Role          string `json:"role"`
 	UsernameTaken bool   `json:"-"`
 
 	Errors FormErrors `json:"errors"`
