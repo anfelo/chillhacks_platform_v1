@@ -29,7 +29,7 @@ func (h *UserHandler) CurrentUser() http.HandlerFunc {
 	}
 }
 
-func (h *UserHandler) RegisterSubmit() http.HandlerFunc {
+func (h *UserHandler) Register() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		reqBody, err := ioutil.ReadAll(r.Body)
 		if err != nil {
@@ -78,7 +78,7 @@ func (h *UserHandler) RegisterSubmit() http.HandlerFunc {
 	}
 }
 
-func (h *UserHandler) LoginSubmit() http.HandlerFunc {
+func (h *UserHandler) Login() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		reqBody, err := ioutil.ReadAll(r.Body)
 		if err != nil {
