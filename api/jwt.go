@@ -2,14 +2,16 @@ package api
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/anfelo/chillhacks_platform/utils/errors"
 	"github.com/golang-jwt/jwt/v4"
 )
 
+var signingKey = os.Getenv("JWTSECRET")
+
 func GenerateJWT(username, uID string) (string, error) {
-	var mySigningKey = []byte("TEST") // Set this in the env
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 
@@ -18,7 +20,7 @@ func GenerateJWT(username, uID string) (string, error) {
 	claims["username"] = username
 	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
 
-	tokenString, err := token.SignedString(mySigningKey)
+	tokenString, err := token.SignedString(signingKey)
 
 	if err != nil {
 		return "", err
@@ -27,12 +29,11 @@ func GenerateJWT(username, uID string) (string, error) {
 }
 
 func VerifyJWT(token string) (string, *errors.RestErr) {
-	var mySigningKey = []byte("TEST") // Set this in the env
 	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("there was an error in parsing")
 		}
-		return mySigningKey, nil
+		return signingKey, nil
 	})
 
 	if err != nil {
