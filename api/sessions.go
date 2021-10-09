@@ -22,8 +22,6 @@ func NewSessionManager(dataSourceName string) (*scs.SessionManager, error) {
 	}
 
 	sessions := scs.New()
-	// sessionManager.Cookie.SameSite = http.SameSiteStrictMode
-	sessions.Cookie.Secure = false
 	sessions.Store = postgresstore.New(db)
 
 	return sessions, nil
