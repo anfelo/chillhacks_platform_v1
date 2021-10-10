@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/gob"
+	"net/http"
 
 	"github.com/alexedwards/scs/postgresstore"
 	"github.com/alexedwards/scs/v2"
@@ -22,6 +23,7 @@ func NewSessionManager(dataSourceName string) (*scs.SessionManager, error) {
 	}
 
 	sessions := scs.New()
+	sessions.Cookie.SameSite = http.SameSiteNoneMode
 	sessions.Store = postgresstore.New(db)
 
 	return sessions, nil
