@@ -20,7 +20,7 @@ func GenerateJWT(username, uID string) (string, error) {
 	claims["username"] = username
 	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
 
-	tokenString, err := token.SignedString(signingKey)
+	tokenString, err := token.SignedString([]byte(signingKey))
 
 	if err != nil {
 		return "", err
@@ -33,7 +33,7 @@ func VerifyJWT(token string) (string, *errors.RestErr) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("there was an error in parsing")
 		}
-		return signingKey, nil
+		return []byte(signingKey), nil
 	})
 
 	if err != nil {
