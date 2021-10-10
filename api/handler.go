@@ -58,8 +58,8 @@ func NewHandler(
 
 	h.Route("/auth", func(r chi.Router) {
 		r.Get("/currentuser", users.CurrentUser())
-		r.Post("/register", users.RegisterSubmit())
-		r.Post("/login", users.LoginSubmit())
+		r.Post("/register", users.Register())
+		r.Post("/login", users.Login())
 		r.Get("/logout", users.Logout())
 	})
 

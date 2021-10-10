@@ -18,10 +18,15 @@ type UserHandler struct {
 	sessions *scs.SessionManager
 }
 
+type AuthResponse struct {
+	User  courses.User `json:"user"`
+	Token string       `json:"token"`
+}
+
 func (h *UserHandler) CurrentUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		user := GetSessionData(h.sessions, r.Context())
-		if user.LoggedIn {
+		if r.Context().Value("user") != nil {
+			user := r.Context().Value("user").(courses.User)
 			http_utils.RespondJson(w, http.StatusOK, user)
 			return
 		}
@@ -29,7 +34,7 @@ func (h *UserHandler) CurrentUser() http.HandlerFunc {
 	}
 }
 
-func (h *UserHandler) RegisterSubmit() http.HandlerFunc {
+func (h *UserHandler) Register() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		reqBody, err := ioutil.ReadAll(r.Body)
 		if err != nil {
@@ -78,7 +83,7 @@ func (h *UserHandler) RegisterSubmit() http.HandlerFunc {
 	}
 }
 
-func (h *UserHandler) LoginSubmit() http.HandlerFunc {
+func (h *UserHandler) Login() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		reqBody, err := ioutil.ReadAll(r.Body)
 		if err != nil {
@@ -96,6 +101,7 @@ func (h *UserHandler) LoginSubmit() http.HandlerFunc {
 			http_utils.RespondJson(w, restErr.Status, restErr)
 			return
 		}
+
 		user, err := h.store.UserByUsername(form.Username)
 		if err != nil {
 			form.IncorrectCredentials = true
@@ -110,14 +116,21 @@ func (h *UserHandler) LoginSubmit() http.HandlerFunc {
 			return
 		}
 
-		h.sessions.Put(r.Context(), "user_id", user.ID)
-		http_utils.RespondJson(w, http.StatusOK, user)
+		validToken, err := GenerateJWT(user.Username, user.ID.String())
+		if err != nil {
+			restErr := errors.NewInternatServerError("internal server error")
+			http_utils.RespondJson(w, restErr.Status, restErr)
+			return
+		}
+
+		authRes := AuthResponse{User: user, Token: validToken}
+		http_utils.RespondJson(w, http.StatusOK, authRes)
 	}
 }
 
 func (h *UserHandler) Logout() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		h.sessions.Remove(r.Context(), "user_id")
+		h.sessions.Remove(r.Context(), "user")
 		http_utils.RespondJson(w, http.StatusOK, map[string]string{"success": "true"})
 	}
 }

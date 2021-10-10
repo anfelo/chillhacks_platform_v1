@@ -11,6 +11,7 @@ platform:
 	export PGHOST="localhost" && \
 	export PGDATABASE="postgres" && \
 	export PGPASSWORD="secret" && \
+	export JWTSECRET="jwtsecret" && \
 	reflex -s go run main.go
 
 migrate:
