@@ -25,7 +25,11 @@ func NewHandler(
 
 	h.Use(middleware.Logger)
 	h.Use(cors.Handler(cors.Options{
-		AllowedOrigins: []string{"https://*", "http://*", "*"},
+		AllowedOrigins:   []string{"https://dev.chillhacks.com"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		AllowCredentials: true,
+		MaxAge:           300,
 	}))
 	h.Use(sessions.LoadAndSave)
 	h.Use(h.withUser)
