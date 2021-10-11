@@ -27,7 +27,7 @@ func (h *UserHandler) CurrentUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Context().Value("user") != nil {
 			user := r.Context().Value("user").(courses.User)
-			http_utils.RespondJson(w, http.StatusOK, user)
+			http_utils.RespondJson(w, http.StatusOK, map[string]interface{}{"user": user})
 			return
 		}
 		http_utils.RespondJson(w, http.StatusOK, map[string]interface{}{"user": nil})
