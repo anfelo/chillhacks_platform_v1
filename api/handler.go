@@ -42,6 +42,7 @@ func NewHandler(
 			r.Put("/{id}", h.authRequest(h.adminRequest(courses.Update())))
 			r.Delete("/{id}", h.authRequest(h.adminRequest(courses.Delete())))
 
+			r.Get("/lessons", lessons.ListAll())
 			r.Get("/{courseID}/lessons/{lessonID}", lessons.Show())
 			r.Get("/{courseID}/lessons", lessons.List())
 			r.Post("/{courseID}/lessons", h.authRequest(h.adminRequest(lessons.Create())))
