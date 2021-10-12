@@ -11,6 +11,7 @@ import (
 
 const (
 	queryGetLesson          = `SELECT * FROM lessons WHERE id = $1`
+	queryGetLessons         = `SELECT * FROM lessons`
 	queryGetLessonsByCourse = `
 		SELECT * FROM lessons
 		WHERE course_id = $1
@@ -44,6 +45,14 @@ func (s *LessonStore) Lesson(id uuid.UUID) (courses.Lesson, error) {
 		return courses.Lesson{}, fmt.Errorf("error getting lesson: %w", err)
 	}
 	return l, nil
+}
+
+func (s *LessonStore) Lessons() ([]courses.Lesson, error) {
+	var ll []courses.Lesson
+	if err := s.Select(&ll, queryGetLessons); err != nil {
+		return []courses.Lesson{}, fmt.Errorf("error getting lessons: %w", err)
+	}
+	return ll, nil
 }
 
 func (s *LessonStore) LessonsByCourse(courseID uuid.UUID) ([]courses.Lesson, error) {

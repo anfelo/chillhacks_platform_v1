@@ -64,6 +64,23 @@ func (h *LessonHandler) List() http.HandlerFunc {
 	}
 }
 
+func (h *LessonHandler) ListAll() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ll, err := h.store.Lessons()
+		if err != nil {
+			restErr := errors.NewInternatServerError("internal server error")
+			http_utils.RespondJson(w, restErr.Status, restErr)
+			return
+		}
+
+		llRes := courses.LessonsResponse{
+			Count:   len(ll),
+			Results: ll,
+		}
+		http_utils.RespondJson(w, http.StatusOK, llRes)
+	}
+}
+
 func (h *LessonHandler) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cIDStr := chi.URLParam(r, "courseID")

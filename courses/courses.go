@@ -65,6 +65,7 @@ type CourseStore interface {
 
 type LessonStore interface {
 	Lesson(id uuid.UUID) (Lesson, error)
+	Lessons() ([]Lesson, error)
 	LessonsByCourse(courseID uuid.UUID) ([]Lesson, error)
 	CreateLesson(l *Lesson) error
 	UpdateLesson(l *Lesson) error
