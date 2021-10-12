@@ -42,12 +42,14 @@ func NewHandler(
 			r.Put("/{id}", h.authRequest(h.adminRequest(courses.Update())))
 			r.Delete("/{id}", h.authRequest(h.adminRequest(courses.Delete())))
 
-			r.Get("/lessons", lessons.ListAll())
 			r.Get("/{courseID}/lessons/{lessonID}", lessons.Show())
 			r.Get("/{courseID}/lessons", lessons.List())
 			r.Post("/{courseID}/lessons", h.authRequest(h.adminRequest(lessons.Create())))
 			r.Put("/{courseID}/lessons/{lessonID}", h.authRequest(h.adminRequest(lessons.Update())))
 			r.Delete("/{courseID}/lessons/{lessonID}", h.authRequest(h.adminRequest(lessons.Delete())))
+		})
+		r.Route("/lessons", func(r chi.Router) {
+			r.Get("/", lessons.ListAll())
 		})
 		r.Route("/subjects", func(r chi.Router) {
 			r.Get("/{id}", subjects.Show())
